@@ -1,0 +1,180 @@
+#include <iostream>
+#include <string>
+#include <limits>
+using namespace std;
+
+#define MAX 50
+
+// Stack structure
+struct stack
+{
+    string data[MAX];
+    int top;
+};
+
+// Initialize stack
+void initialize(stack &s)
+{
+    s.top = -1;
+}
+
+// Check whether stack is empty
+bool isEmpty(stack &s)
+{
+    return s.top == -1;
+}
+
+// Check whether stack is full
+bool isFull(stack &s)
+{
+    return s.top == MAX - 1;
+}
+
+// Push operation
+bool push(stack &s, string value)
+{
+    if (isFull(s))
+    {
+        cout << "Stack Overflow!\n";
+        return false;
+    }
+    else
+    {
+        s.top++;
+        s.data[s.top] = value;
+        return true;
+    }
+}
+
+// Pop operation
+string pop(stack &s)
+{
+    if (isEmpty(s))
+    {
+        return "";
+    }
+
+    string value = s.data[s.top];
+    s.top--;
+
+    return value;
+}
+
+// Peek operation
+string peek(stack &s)
+{
+    if (isEmpty(s))
+    {
+        return "";
+    }
+
+    return s.data[s.top];
+}
+
+// Main program
+int main()
+{
+    stack undostack;
+    stack redostack;
+
+    initialize(undostack);
+    initialize(redostack);
+
+    string document = "";
+    string change;
+    int choice;
+
+    do
+    {
+        cout << "\n========= TEXT EDITOR =========\n";
+        cout << "1. Make a change\n";
+        cout << "2. Undo Action\n";
+        cout << "3. Redo Action\n";
+        cout << "4. Display Document\n";
+        cout << "5. Exit\n";
+
+        cout << "Enter your choice: ";
+
+        if (!(cin >> choice))
+        {
+            cout << "Invalid input! Enter a number.\n";
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            continue;
+        }
+
+        switch (choice)
+        {
+            case 1:
+                // Store current document before change
+                cout << "Enter text to add: ";
+
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                getline(cin, change);
+
+                if (push(undostack, document))
+                {
+                    document = document + change;
+
+                    // Clear redo stack
+                    initialize(redostack);
+
+                    cout << "Change made successfully.\n";
+                }
+                break;
+
+            case 2:
+                // Check whether undo is possible
+                if (isEmpty(undostack))
+                {
+                    cout << "Nothing to undo!\n";
+                }
+                else
+                {
+                    // Store current document in redo stack
+                    if (push(redostack, document))
+                    {
+                        // Get previous document
+                        document = pop(undostack);
+
+                        cout << "Undo performed successfully.\n";
+                    }
+                }
+                break;
+
+            case 3:
+                // Check whether redo is possible
+                if (isEmpty(redostack))
+                {
+                    cout << "Nothing to redo!\n";
+                }
+                else
+                {
+                    // Store current document in undo stack
+                    if (push(undostack, document))
+                    {
+                        // Get previously undone document
+                        document = pop(redostack);
+
+                        cout << "Redo performed successfully.\n";
+                    }
+                }
+                break;
+
+            case 4:
+                cout << "\nCurrent Document:\n";
+                cout << document << endl;
+                break;
+
+            case 5:
+                cout << "Exiting Text Editor...\n";
+                break;
+
+            default:
+                cout << "Invalid choice!\n";
+        }
+
+    } while (choice != 5);
+
+    return 0;
+}
