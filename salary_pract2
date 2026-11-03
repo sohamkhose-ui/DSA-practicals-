@@ -1,0 +1,73 @@
+# Name: Soham Khose (B-36)
+
+# Taking input from the user
+n = int(input("Enter the number of salaries: "))
+
+salaries = []
+
+if n < 0:
+    print("Number of salaries cannot be negative.")
+
+else:
+    for i in range(n):
+        salary = float(input(f"Enter salary {i+1}: "))
+        salaries.append(salary)
+
+    # Selection Sort
+    def selection_sort(arr):
+        n = len(arr)
+
+        for i in range(n - 1):
+            min_index = i
+
+            for j in range(i + 1, n):
+                if arr[j] < arr[min_index]:
+                    min_index = j
+
+            # Swap
+            temp = arr[i]
+            arr[i] = arr[min_index]
+            arr[min_index] = temp
+
+    # Bubble Sort
+    def bubble_sort(arr):
+        n = len(arr)
+
+        for i in range(n - 1):
+            for j in range(n - 1 - i):
+                if arr[j] > arr[j + 1]:
+                    temp = arr[j]
+                    arr[j] = arr[j + 1]
+                    arr[j + 1] = temp
+
+    # Creating copies of the original salary list
+    selection_salaries = salaries.copy()
+    bubble_salaries = salaries.copy()
+
+    # Applying sorting algorithms
+    selection_sort(selection_salaries)
+    bubble_sort(bubble_salaries)
+
+    # Displaying Selection Sort result
+    print("\nSalaries using Selection Sort:")
+    for salary in selection_salaries:
+        print(salary)
+
+    # Displaying Bubble Sort result
+    print("\nSalaries using Bubble Sort:")
+    for salary in bubble_salaries:
+        print(salary)
+
+    # Displaying top five highest salaries
+    print("\nTop Five Highest Salaries:")
+
+    count = 0
+    i = len(selection_salaries) - 1
+
+    while i >= 0 and count < 5:
+        print(selection_salaries[i])
+        i = i - 1
+        count = count + 1
+
+    if n == 0:
+        print("No salaries entered.")
