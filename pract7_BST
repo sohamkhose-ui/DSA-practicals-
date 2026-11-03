@@ -1,0 +1,253 @@
+#include <iostream>
+#include <limits>
+using namespace std;
+
+// Node structure
+struct Node
+{
+    int data;
+    Node *left, *right;
+
+    Node(int value)
+    {
+        data = value;
+        left = right = NULL;
+    }
+};
+
+// Binary Search Tree class
+class BST
+{
+public:
+
+    Node* root = NULL;
+
+    // Function to insert a node
+    Node* insert(Node* root, int value)
+    {
+        if (root == NULL)
+            return new Node(value);
+
+        if (value < root->data)
+            root->left = insert(root->left, value);
+
+        else if (value > root->data)
+            root->right = insert(root->right, value);
+
+        return root;
+    }
+
+    // Function to search a value
+    Node* search(Node* root, int key)
+    {
+        if (root == NULL || root->data == key)
+            return root;
+
+        if (key < root->data)
+            return search(root->left, key);
+
+        return search(root->right, key);
+    }
+
+    // Function to find minimum value
+    Node* findMin(Node* root)
+    {
+        while (root->left != NULL)
+            root = root->left;
+
+        return root;
+    }
+
+    // Function to delete a node
+    Node* deleteNode(Node* root, int key)
+    {
+        if (root == NULL)
+            return root;
+
+        if (key < root->data)
+            root->left = deleteNode(root->left, key);
+
+        else if (key > root->data)
+            root->right = deleteNode(root->right, key);
+
+        else
+        {
+            // Case 1: No left child
+            if (root->left == NULL)
+            {
+                Node* temp = root->right;
+                delete root;
+                return temp;
+            }
+
+            // Case 2: No right child
+            else if (root->right == NULL)
+            {
+                Node* temp = root->left;
+                delete root;
+                return temp;
+            }
+
+            // Case 3: Two children
+            Node* temp = findMin(root->right);
+
+            root->data = temp->data;
+
+            root->right = deleteNode(root->right, temp->data);
+        }
+
+        return root;
+    }
+
+    // Inorder traversal
+    void inorder(Node* root)
+    {
+        if (root != NULL)
+        {
+            inorder(root->left);
+            cout << root->data << " ";
+            inorder(root->right);
+        }
+    }
+
+    // Function to free memory
+    void freeTree(Node* root)
+    {
+        if (root != NULL)
+        {
+            freeTree(root->left);
+            freeTree(root->right);
+            delete root;
+        }
+    }
+
+};
+
+// Main function
+int main()
+{
+    BST tree;
+
+    int choice, value;
+
+    do
+    {
+        cout << "\n\n===== BINARY SEARCH TREE =====";
+        cout << "\n1. Insert";
+        cout << "\n2. Delete";
+        cout << "\n3. Search";
+        cout << "\n4. Display";
+        cout << "\n5. Exit";
+
+        cout << "\nEnter your choice: ";
+
+        if (!(cin >> choice))
+        {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+            cout << "\nInvalid input! Enter a number.";
+            continue;
+        }
+
+        switch (choice)
+        {
+            case 1:
+
+                cout << "Enter value: ";
+
+                if (!(cin >> value))
+                {
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    cout << "\nInvalid value!";
+                    break;
+                }
+
+                if (tree.search(tree.root, value) != NULL)
+                {
+                    cout << "\nDuplicate values are not allowed.";
+                }
+                else
+                {
+                    tree.root = tree.insert(tree.root, value);
+                    cout << "\nValue inserted successfully.";
+                }
+
+                break;
+
+            case 2:
+
+                cout << "Enter value to delete: ";
+
+                if (!(cin >> value))
+                {
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    cout << "\nInvalid value!";
+                    break;
+                }
+
+                if (tree.search(tree.root, value) != NULL)
+                {
+                    tree.root = tree.deleteNode(tree.root, value);
+                    cout << "\nValue deleted successfully.";
+                }
+                else
+                {
+                    cout << "\nValue not found.";
+                }
+
+                break;
+
+            case 3:
+
+                cout << "Enter value to search: ";
+
+                if (!(cin >> value))
+                {
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    cout << "\nInvalid value!";
+                    break;
+                }
+
+                if (tree.search(tree.root, value) != NULL)
+                    cout << "\nValue found.";
+                else
+                    cout << "\nValue not found.";
+
+                break;
+
+            case 4:
+
+                if (tree.root == NULL)
+                {
+                    cout << "\nTree is empty.";
+                }
+                else
+                {
+                    cout << "\nBST (Inorder): ";
+                    tree.inorder(tree.root);
+                }
+
+                break;
+
+            case 5:
+
+                cout << "\nExiting program.";
+                break;
+
+            default:
+
+                cout << "\nInvalid choice!";
+        }
+
+    } while (choice != 5);
+
+    // Release allocated memory
+    tree.freeTree(tree.root);
+    tree.root = NULL;
+
+    return 0;
+}
